@@ -1,1 +1,2 @@
-thhis is readme
+#!/bin/bash
+"Alx school is cool"
