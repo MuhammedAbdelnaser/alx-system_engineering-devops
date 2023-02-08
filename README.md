@@ -1,1 +1,2 @@
-second shell assignment
+#!/bin/bash
+echo Alx
