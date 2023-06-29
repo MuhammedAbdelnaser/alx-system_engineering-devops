@@ -1,8 +1,6 @@
 #!/usr/bin/env bash
 # print a string 10 times using until loop
-
 i=0
-
 until false; do
   echo "Best School"
   ((i++))
