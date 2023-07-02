@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
-# Displays "To infinity and beyond" with a sleep 2.
-while true
-do
+# Displays "To infinity and beyond"
+
+while true; do
   echo "To infinity and beyond"
   sleep 2
 done
