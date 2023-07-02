@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# Displays "To infinity and beyond"
+# To infinity and beyond
 
 while true; do
   echo "To infinity and beyond"
