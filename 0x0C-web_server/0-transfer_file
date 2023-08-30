@@ -1,12 +1,26 @@
-#!/bin/bash
+#!/usr/bin/env bash
+# Transfers a file from our client to a server
+#
+# variables
+path="$(cd "$(dirname "${BASH_SOURCE[0]}")" >/dev/null 2>&1 && pwd)"
+filename=$(basename "$BASH_SOURCE")
+file="$1"
+ip="$2"
+user="$3"
+key="$4"
+
+if [ $# -eq 4 ]; then
+	scp -i "$key" -o StrictHostKeyChecking=no "$path"/"$file" "$user"@"$ip":/home/"$user"/
+else
+	echo -e "Usage: $filename PATH_TO_FILE IP USERNAME PATH_TO_SSH_KEY"
+fi
 
 # Check if at least 4 parameters are provided
 if [ $# -lt 4 ]; then
     echo "Usage: $0 PATH_TO_FILE IP USERNAME PATH_TO_SSH_KEY"
     exit 1
 fi
-
-# Extract parameters
+asa# Extract parameters
 PATH_TO_FILE="$1"
 IP="$2"
 USERNAME="$3"
@@ -19,5 +33,5 @@ scp -o StrictHostKeyChecking=no -i "$PATH_TO_SSH_KEY" "$PATH_TO_FILE" "$USERNAME
 if [ $? -eq 0 ]; then
     echo "File transferred successfully to $IP"
 else
-    echo "File transfer failed"
+    echo "File transfer failedfi"
 fi
