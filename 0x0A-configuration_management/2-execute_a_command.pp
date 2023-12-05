@@ -1,6 +1,6 @@
-# kills a process named 'killmanow'
+# install_flask.pp
 
-exec {'pkill':
-  command  => 'pkill killmenow',
-  provider => 'shell',
+package { 'flask':
+  ensure   => '2.1.0',
+  provider => 'pip3',
 }
