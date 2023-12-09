@@ -1,0 +1,30 @@
+#!usr/bin/env bash
+
+# Domain configuration
+
+# www point it to your lb-01 
+# lb-01 point it to your lb-01 
+# web-01 point it to your web-01 
+# web-02 point it to your web-02 
+
+
+sub_domains=( "www" "lb-01" "web-01" "web-02" )
+
+domain_digging() {
+    sub_domain=$1
+    domain=$2
+
+    dig "$subdomain.$domain" | grep -A1 'ANSWER SECTION:' | tail -1 | awk -v s="$subdomain" 'BEGIN { FS = " " } ; { print "The subdomain " s " is a " $4 " record and points to " $5 }'
+}
+
+if [ $# -eq 1 ]; then
+    domain="$1"
+    for sub_domain in "${sub_domains[@]}"; do
+        domain_digging "$sub_domain" "$domain"
+    done
+elif
+    [ $# -eq 2 ]; then
+    sub_domain="$1"
+    domain="$2"
+    domain_digging "$sub_domain" "$domain"
+fi
