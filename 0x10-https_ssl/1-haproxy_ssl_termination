@@ -9,6 +9,9 @@ global
         daemon
 
         # Default SSL material locations
+        maxconn 2048
+        tune.ssl.default-dh-param 2048
+        # Default SSL material locations
         ca-base /etc/ssl/certs
         crt-base /etc/ssl/private
 
@@ -33,20 +36,19 @@ defaults
         errorfile 503 /etc/haproxy/errors/503.http
         errorfile 504 /etc/haproxy/errors/504.http
 
-frontend www-http
-    bind   *:80
-    http-request set-header X-Forwarded-Proto http
-    default_backend www-backend
-frontend www-https
-    bind   *:443 ssl crt /etc/haproxy/certs/www.mu-abdelnaser.tech.pem
-    http-request set-header X-Forwarded-Proto https
-    acl    letsencrypt-acl path_beg /.well-known/acme-challenge/
-    use_backend letsencrypt-backend if letsencrypt-acl
-    default_backend www-backend
+        option forwardfor
+        option http-server-close
 
-backend www-backend
-    balance  roundrobin
-    redirect scheme https if !{ ssl_fc }
+frontend muhammed_front_end
+    bind *:80
+    bind *:443 ssl crt /etc/haproxy/certs/www.mu-abdelnaser.tech.pem
+    http-request redirect scheme https unless { ssl_fc }
+    http-request set-header X-Forwarded-Proto https
+    default_backend muhammed_back_end
+
+backend muhammed_back_end
+    balance roundrobin
+    
     server 283472-web-01 54.172.219.46 check
     server 283472-web-02 52.91.168.169 check
 
