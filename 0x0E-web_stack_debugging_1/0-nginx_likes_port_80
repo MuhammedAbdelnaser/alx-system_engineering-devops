@@ -1,14 +1,5 @@
 #!/usr/bin/env bash
 
 # script that automates nginx server to run at port 80
-
-if [[ $EUID -ne 0 ]]; then
-  echo "This script must be run as root."
-  exit 1
-fi
-
-rm /etc/nginx/sites-enabled/default
-
-ln -s /etc/nginx/sites-available/default /etc/nginx/sites-enabled/default
-
-service nginx restart
+sudo sed -i s/8080/80/ /etc/nginx/sites-enabled/default
+sudo service nginx restart
