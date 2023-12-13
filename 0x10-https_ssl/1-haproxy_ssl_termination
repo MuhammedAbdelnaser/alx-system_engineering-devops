@@ -1,25 +1,40 @@
 global
-    log /dev/log    local0
-    stats socket /run/haproxy/admin.sock mode 660 level admin
+    log     /dev/log local0
+    maxconn 2048
+    user    haproxy
+    group   haproxy
+    tune.ssl.default-dh-param 2048
 
 defaults
     log     global
     mode    http
     option  httplog
-    timeout connect  10s
-    timeout client  30s
-    timeout server  30s
+    option  dontlognull
+    retries 3
+    option  redispatch
+    timeout connect  5000
+    timeout client  10000
+    timeout server  10000
+    option  forwardfor
+    option  http-server-close
 
 frontend www-http
-    bind *:80
-    reqadd X-Forwarded-Proto:\ http
-    default_backend web-backend
+    bind   0.0.0.0:80
+    http-request set-header X-Forwarded-Proto http
+    default_backend www-backend
+
 frontend www-https
-    bind *:443 ssl crt /etc/ssl/certs/ssl.pem
-    reqadd X-Forwarded-Proto:\ https
-    default_backend web-backend
-backend web-backend
-    balance roundrobin
+    bind   0.0.0.0:443 ssl crt /etc/letsencrypt/live/www.mu-abdelnaser.tech/www.mu-abdelnaser.tech.pem
+    http-request set-header X-Forwarded-Proto https
+    acl    letsencrypt-acl path_beg /.well-known/acme-challenge/
+    use_backend letsencrypt-backend if letsencrypt-acl
+    default_backend www-backend
+
+backend www-backend
+    balance  roundrobin
     redirect scheme https if !{ ssl_fc }
     server 283472-web-01 54.172.219.46 check
     server 283472-web-02 52.91.168.169 check
+
+backend letsencrypt-backend
+    server letsencrypt 127.0.0.1:54321
