@@ -1,40 +1,28 @@
 #!/usr/bin/env bash
-# Configures a new ubuntu machine by installing
-# Nginx where it should be listening on port 80
-# Serve a page that would return a Hello World string
-#
-# colors
-blue='\e[1;34m'
-brown='\e[0;33m'
-green='\e[1;32m'
-reset='\033[0m'
+# Configures an Nginx server so that /redirect_me redirects to another page.
+# The redirection is configured as a "301 Moved Permanently"
+# The answer file should be a Bash script containing commands to automatically configure a Ubuntu machine to respect above requirements
+# Using what you did with 1-install_nginx_web_server, write 3-redirection so that it configures a brand new Ubuntu machine to the requirements asked in this task
 
-echo -e "${blue}Updating and installing ${brown}Nginx${blue}.${reset}\n"
-sudo apt-get update -y -qq && \
-	 sudo apt-get install nginx -y
+apt-get -y update
+apt-get -y install nginx
 
-echo -e "\n${blue}Setting up some minor stuff.${reset}\n"
-
-# starting nginx service
-sudo service nginx start
-
-# allowing nginx on firewall
+# is used to allow incoming connections to the Nginx HTTP server through the firewall through port 80. using the ufw (Uncomplicated Firewall) command-line tool.
 sudo ufw allow 'Nginx HTTP'
 
-# Give the user ownership to website files for easy editing
-sudo chown -R "$USER":"$USER" /var/www/html
-sudo chmod -R 755 /var/www
+# change the owner of the /var/www directory to the current user recursively. To allow modification of the files in the directory.
+sudo chown -R $USER /var/www
 
-# Backup default index
-cp /var/www/html/index.nginx-debian.html /var/www/html/index.nginx-debian.html.bckp
+# set up a page containing "Hello World" when queried at the root with a curl GET request.
+echo 'Hello World!' > /var/www/html/index.nginx-debian.html
 
-# Creating new index
-echo -e "Hello World!" > /var/www/html/index.nginx-debian.html
+# change the owner of the /etc/nginx/sites-available/defaul/etc/nginx/sites-available/default,to enable modification of the config file.
+sudo chown -R $USER /etc/nginx/sites-available/default
 
-# Setting up /redirect_me to a youtube video
-sudo sed -i '24i\	rewrite ^/redirect_me https://www.youtube.com/watch?v=QH2-TGUlwu4 permanent;' /etc/nginx/sites-available/default
+# Making a backup of the default file, in case something goes wrong
+sudo cp /etc/nginx/sites-available/default /etc/nginx/sites-available/default.bak
 
-# Restarting nginx
-sudo service nginx restart
+# Setting up /redirect_me to a permanent redirect to https://twitter.com/ai_optimizer
+sudo sed -i '24i\rewrite ^/redirect_me https://twitter.com/ai_optimizer permanent;' /etc/nginx/sites-available/default
 
-echo -e "\n${green}Completed.${reset} ✅\n"
+service nginx restart
